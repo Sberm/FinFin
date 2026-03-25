@@ -1,0 +1,63 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment & Secrets (NEVER commit these)
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env.local
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# API Keys / Tokens
+*secret*
+*credential*
+*api_key*
+*token*
+
+# Database
+*.sqlite3
+*.db
+db_dumps/
+*.sql.bak
+pgdata/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Uploads (user bank files — sensitive)
+backend/uploads/
+*.csv
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Docker volumes (local data)
+ollama_data/
