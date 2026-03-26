@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { getSavingsAdvice } from "@/lib/api";
+import { Button } from "@/components/ui/8bit/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/8bit/card";
 
 export default function AdvicePage() {
   const [advice, setAdvice] = useState("");
@@ -21,26 +23,32 @@ export default function AdvicePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white p-8 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-emerald-400 mb-6">AI Savings Advice</h1>
-      <p className="text-gray-400 mb-6">
-        Our AI analyzes your recent transactions and gives personalized savings tips.
-      </p>
+    <main className="min-h-screen p-8 max-w-2xl mx-auto space-y-8">
+      <div className="space-y-2">
+        <h1 className="retro text-xl font-bold text-primary">AI Savings Advice</h1>
+        <p className="retro text-[10px] text-muted-foreground">
+          Our AI analyzes your recent transactions and gives personalized savings tips.
+        </p>
+      </div>
 
-      <button
-        onClick={fetchAdvice}
-        disabled={loading}
-        className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white px-6 py-3 rounded-xl font-medium transition mb-6"
-      >
+      <Button onClick={fetchAdvice} disabled={loading}>
         {loading ? "Thinking..." : "Get Advice"}
-      </button>
+      </Button>
 
-      {error && <p className="text-red-400 mb-4">{error}</p>}
+      {error && <p className="retro text-[10px] text-destructive">{error}</p>}
 
       {advice && (
-        <div className="bg-gray-800 rounded-xl p-6 whitespace-pre-wrap text-gray-200 leading-relaxed">
-          {advice}
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xs">Your Savings Tips</CardTitle>
+            <CardDescription>Personalized by AI</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="retro text-[10px] leading-relaxed text-foreground whitespace-pre-wrap">
+              {advice}
+            </p>
+          </CardContent>
+        </Card>
       )}
     </main>
   );

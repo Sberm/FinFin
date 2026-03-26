@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { uploadFile, addTransaction } from "@/lib/api";
+import { Button } from "@/components/ui/8bit/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/8bit/card";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -8,6 +10,7 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload() {
     if (!file) return;
@@ -33,46 +36,61 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white p-8 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-emerald-400 mb-6">Upload Bank Statement</h1>
+    <main className="min-h-screen p-8 max-w-3xl mx-auto space-y-8">
+      <h1 className="retro text-xl font-bold text-primary">Upload Bank Statement</h1>
 
-      <div className="bg-gray-800 rounded-xl p-6 mb-6">
-        <input
-          type="file"
-          accept=".csv,.pdf"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="mb-4 block text-sm text-gray-300"
-        />
-        <button
-          onClick={handleUpload}
-          disabled={!file || loading}
-          className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white px-6 py-2 rounded-lg font-medium transition"
-        >
-          {loading ? "Parsing..." : "Parse File"}
-        </button>
-        {error && <p className="text-red-400 mt-3">{error}</p>}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Select File</CardTitle>
+          <CardDescription>Accepts .csv or .pdf</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".csv,.pdf"
+            className="hidden"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+          <div className="flex items-center gap-4">
+            <Button variant="outline" onClick={() => inputRef.current?.click()}>
+              Choose File
+            </Button>
+            <span className="retro text-[10px] text-muted-foreground">
+              {file ? file.name : "No file chosen"}
+            </span>
+          </div>
+          <Button onClick={handleUpload} disabled={!file || loading}>
+            {loading ? "Parsing..." : "Parse File"}
+          </Button>
+          {error && <p className="retro text-[10px] text-destructive mt-2">{error}</p>}
+        </CardContent>
+      </Card>
 
       {result.length > 0 && (
-        <div>
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-xl font-semibold">{result.length} transactions found</h2>
-            <button
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="retro text-xs text-foreground">{result.length} transactions found</h2>
+            <Button
+              variant={saved ? "secondary" : "default"}
               onClick={handleSaveAll}
               disabled={loading || saved}
-              className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm transition"
             >
               {saved ? "Saved!" : "Save All & Categorize"}
-            </button>
+            </Button>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {result.map((tx, i) => (
-              <div key={i} className="bg-gray-800 rounded-lg p-4 flex justify-between text-sm">
-                <span className="text-gray-300">{tx.date} — {tx.description}</span>
-                <span className={tx.amount < 0 ? "text-red-400" : "text-emerald-400"}>
-                  ${tx.amount}
-                </span>
-              </div>
+              <Card key={i}>
+                <CardContent className="flex justify-between items-center py-3">
+                  <span className="retro text-[10px] text-muted-foreground">
+                    {tx.date} — {tx.description}
+                  </span>
+                  <span className={`retro text-xs font-bold ${tx.amount < 0 ? "text-destructive" : "text-primary"}`}>
+                    ${tx.amount}
+                  </span>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
