@@ -1,10 +1,12 @@
 "use client";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { uploadFile, addTransaction } from "@/lib/api";
 import { Button } from "@/components/ui/8bit/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/8bit/card";
 
 export default function UploadPage() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -33,6 +35,7 @@ export default function UploadPage() {
     }
     setSaved(true);
     setLoading(false);
+    router.push("/dashboard");
   }
 
   return (

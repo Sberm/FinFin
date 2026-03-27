@@ -18,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="bg-card border-b-4 border-foreground px-8 py-5 flex gap-8 items-center">
           <Link href="/" className="retro text-primary font-bold text-xs tracking-wide">FinFin</Link>
           <Link href="/upload" className="retro text-muted-foreground hover:text-foreground text-[10px] transition">Upload</Link>
+          <Link href="/dashboard" className="retro text-muted-foreground hover:text-foreground text-[10px] transition">Dashboard</Link>
           <Link href="/transactions" className="retro text-muted-foreground hover:text-foreground text-[10px] transition">Transactions</Link>
           <Link href="/advice" className="retro text-muted-foreground hover:text-foreground text-[10px] transition">Advice</Link>
         </nav>
