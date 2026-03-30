@@ -1,12 +1,11 @@
 /**
- * Shared TypeScript interfaces that mirror the backend Django models / API schema.
+ * Shared TypeScript interfaces that mirror the backend FastAPI/SQLAlchemy schema.
  *
  * Keep these in sync with:
- *   backend/api/models.py   (Django models)
- *   backend/api/serializers.py (DRF serializers)
+ *   backend/models/transaction.py  (Pydantic models + SQLAlchemy ORM)
+ *   db/schema.sql                  (PostgreSQL table definitions)
  *
- * Field names intentionally use snake_case to match the JSON the API returns.
- * The frontend layer converts to camelCase only in display logic, never in fetch/store.
+ * Field names use snake_case to match the JSON the API returns directly.
  */
 
 // ---------------------------------------------------------------------------
@@ -15,15 +14,29 @@
 
 export interface Transaction {
   id?: number;
-  date: string;        // ISO 8601 "YYYY-MM-DD"
+  date: string;          // ISO 8601 "YYYY-MM-DD"
   description: string;
-  amount: number;      // positive = income, negative = expense
-  category?: string;   // e.g. "Food", "Bills", "Income" — set by AI classifier
-  source?: string;     // e.g. "upload", "manual"
+  amount: number;        // positive = income, negative = expense
+  category?: string;     // e.g. "Food", "Bills", "Income" — set by AI classifier
+  confidence?: number;   // 0-100 confidence score from LLM categorization
+  source?: string;       // "csv" | "pdf" | "manual"
+  reviewed?: boolean;    // false until user accepts or edits in the Transactions page
 }
 
 /** Shape returned by GET /api/transactions/ */
 export interface TransactionsResponse {
+  transactions: Transaction[];
+}
+
+/** Shape returned by POST /api/parser/upload */
+export interface UploadResponse {
+  count: number;
+  transactions: Transaction[];
+}
+
+/** Shape returned by POST /api/transactions/bulk */
+export interface BulkTransactionsResponse {
+  count: number;
   transactions: Transaction[];
 }
 
@@ -66,7 +79,7 @@ export interface MonthlyNet {
 }
 
 export interface SectorAllocation {
-  name: string;        // sector label
-  value: number;       // total market value in that sector
-  fill: string;        // chart color
+  name: string;   // sector label
+  value: number;  // total market value in that sector
+  fill: string;   // chart color
 }

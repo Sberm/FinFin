@@ -1,12 +1,23 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from routes import transactions, parser, llm
+from services.db import init_db
 
 load_dotenv()
 
-app = FastAPI(title="FinFin API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Run startup tasks before the server accepts requests."""
+    init_db()
+    yield
+
+
+app = FastAPI(title="FinFin API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

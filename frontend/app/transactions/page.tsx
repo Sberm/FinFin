@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { getTransactions, reviewTransaction } from "@/lib/api";
+import type { Transaction } from "@/types/finance";
 import { Button } from "@/components/ui/8bit/button";
 import { Card, CardContent } from "@/components/ui/8bit/card";
 import { Badge } from "@/components/ui/8bit/badge";
@@ -15,7 +16,7 @@ import {
 const CATEGORIES = ["Food", "Transport", "Shopping", "Bills", "Health", "Entertainment", "Income", "Transfer", "Other"];
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

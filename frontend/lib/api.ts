@@ -12,6 +12,8 @@
 import type {
   Transaction,
   TransactionsResponse,
+  UploadResponse,
+  BulkTransactionsResponse,
   PortfolioResponse,
 } from "@/types/finance";
 
@@ -30,12 +32,12 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 // ---------------------------------------------------------------------------
-// Transactions  →  backend/api/views.py  TransactionViewSet
+// Transactions  →  backend/routes/transactions.py
 // ---------------------------------------------------------------------------
 
 /**
  * GET /api/transactions/
- * Returns all transactions for the authenticated user (or global for MVP).
+ * Returns all stored transactions, ordered by date descending.
  */
 export async function getTransactions(): Promise<Transaction[]> {
   const data = await apiFetch<TransactionsResponse | Transaction[]>("/api/transactions/");
@@ -45,7 +47,7 @@ export async function getTransactions(): Promise<Transaction[]> {
 
 /**
  * POST /api/transactions/
- * Manually create a single transaction.
+ * Manually create a single transaction. Triggers LLM categorization.
  */
 export async function addTransaction(
   data: Pick<Transaction, "date" | "description" | "amount" | "source">
@@ -58,6 +60,21 @@ export async function addTransaction(
 }
 
 /**
+ * POST /api/transactions/bulk
+ * Save all transactions parsed from an uploaded file in one request.
+ * Triggers LLM categorization for each transaction on the backend.
+ */
+export async function bulkSaveTransactions(
+  transactions: Pick<Transaction, "date" | "description" | "amount" | "source">[]
+): Promise<BulkTransactionsResponse> {
+  return apiFetch<BulkTransactionsResponse>("/api/transactions/bulk", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ transactions }),
+  });
+}
+
+/**
  * POST /api/transactions/review
  * Accept, edit, or reject an AI-classified transaction.
  */
@@ -66,8 +83,8 @@ export async function reviewTransaction(review: {
   action: "accept" | "edit" | "reject";
   category?: string;
   description?: string;
-}): Promise<Transaction> {
-  return apiFetch<Transaction>("/api/transactions/review", {
+}): Promise<Transaction | { status: string }> {
+  return apiFetch<Transaction | { status: string }>("/api/transactions/review", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(review),
@@ -75,39 +92,40 @@ export async function reviewTransaction(review: {
 }
 
 // ---------------------------------------------------------------------------
-// File upload  →  backend/api/views.py  ParserViewSet
+// File upload  →  backend/routes/parser.py
 // ---------------------------------------------------------------------------
 
 /**
  * POST /api/parser/upload
- * Upload a PDF / CSV bank statement for AI parsing.
+ * Upload a PDF / CSV bank statement for parsing.
+ * Returns the extracted transactions — call bulkSaveTransactions() to persist them.
  */
-export async function uploadFile(file: File): Promise<{ transactions: Transaction[] }> {
+export async function uploadFile(file: File): Promise<UploadResponse> {
   const form = new FormData();
   form.append("file", file);
-  return apiFetch<{ transactions: Transaction[] }>("/api/parser/upload", {
+  return apiFetch<UploadResponse>("/api/parser/upload", {
     method: "POST",
     body: form,
   });
 }
 
 // ---------------------------------------------------------------------------
-// AI advice  →  backend/api/views.py  AdviceViewSet
+// AI advice  →  backend/routes/transactions.py
 // ---------------------------------------------------------------------------
 
 /**
  * GET /api/transactions/advice
- * Returns AI-generated savings recommendations based on spending patterns.
+ * Returns AI-generated savings recommendations based on stored transaction history.
  */
 export async function getSavingsAdvice(): Promise<{ advice: string }> {
   return apiFetch<{ advice: string }>("/api/transactions/advice");
 }
 
 // ---------------------------------------------------------------------------
-// Portfolio  →  backend/api/views.py  PortfolioViewSet  (planned)
+// Portfolio  →  backend/routes/portfolio.py  (planned)
 //
-// TODO: implement these endpoints on the backend.
-//       Until then, the dashboard falls back to demo data from lib/demo-data.ts
+// TODO: implement GET /api/portfolio/ on the backend.
+//       The dashboard falls back to demo data from lib/demo-data.ts until then.
 // ---------------------------------------------------------------------------
 
 /**
