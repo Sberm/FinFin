@@ -55,9 +55,11 @@ async def add_transactions_bulk(
         data = tx.model_dump(exclude_none=True)
         data["description"] = sanitize(data["description"])
 
-        result = await categorize_transaction(data["description"], data["amount"])
-        data["category"] = result["category"]
-        data["confidence"] = result["confidence"]
+        # Skip LLM if category is already set (e.g. parsed directly from the CSV)
+        if not data.get("category"):
+            result = await categorize_transaction(data["description"], data["amount"])
+            data["category"] = result["category"]
+            data["confidence"] = result["confidence"]
 
         row = TransactionORM(**data)
         db.add(row)
