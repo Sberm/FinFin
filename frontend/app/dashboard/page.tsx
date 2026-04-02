@@ -57,7 +57,8 @@ function computeCategoryStats(transactions: Transaction[]): CategoryStat[] {
   }
   return Object.entries(map)
     .map(([category, total]) => ({ category, total: parseFloat(total.toFixed(2)) }))
-    .sort((a, b) => b.total - a.total);
+    .sort((a, b) => b.total - a.total)
+    .map((item, i) => ({ ...item, color: PALETTE[i % PALETTE.length] }));
 }
 
 function computeMonthlyNet(transactions: Transaction[]): MonthlyNet[] {
@@ -199,14 +200,24 @@ export default function DashboardPage() {
                   <YAxis tick={CHART_TICK_STYLE} tickFormatter={(v) => `$${v}`} width={58} />
                   <Tooltip
                     contentStyle={CHART_TOOLTIP_STYLE}
-                    formatter={(v) => [`$${Number(v).toFixed(2)}`, "Spent"]}
+                    content={({ payload }) => {
+                      if (!payload?.length) return null;
+                      const { color, category, total } = payload[0].payload as CategoryStat;
+                      return (
+                        <div style={{ ...CHART_TOOLTIP_STYLE, padding: "6px 10px" }}>
+                          <p style={{ color, margin: 0 }}>{category}</p>
+                          <p style={{ color, margin: 0 }}>${total.toFixed(2)} spent</p>
+                        </div>
+                      );
+                    }}
                   />
                   <Bar
                     dataKey="total"
                     isAnimationActive
                     shape={(props: BarShapeProps) => {
-                      const { x, y, width, height, index = 0 } = props;
-                      return <rect x={x} y={y} width={Number(width)} height={Number(height)} fill={PALETTE[index % PALETTE.length]} />;
+                      const { x, y, width, height, payload } = props;
+                      const color = (payload as CategoryStat)?.color ?? "#888";
+                      return <rect x={x} y={y} width={Number(width)} height={Number(height)} fill={color} />;
                     }}
                   />
                 </BarChart>

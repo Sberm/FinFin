@@ -71,6 +71,7 @@ export interface PortfolioResponse {
 export interface CategoryStat {
   category: string;
   total: number;
+  color: string;
 }
 
 export interface MonthlyNet {
