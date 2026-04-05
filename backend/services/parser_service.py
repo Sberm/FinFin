@@ -11,9 +11,9 @@ def parse_csv(file_bytes: bytes) -> list[dict]:
 
     # Try common column name mappings
     col_map = {
-        "date": ["date", "transaction date", "trans date", "posted date"],
-        "description": ["description", "memo", "details", "payee", "narrative"],
-        "amount": ["amount", "debit", "credit", "transaction amount"],
+        "date":        ["date", "date_time", "transaction date", "trans date", "posted date"],
+        "description": ["description", "memo", "details", "payee", "narrative", "category"],
+        "amount":      ["amount", "debit", "credit", "transaction amount"],
     }
 
     resolved = {}
@@ -29,12 +29,20 @@ def parse_csv(file_bytes: bytes) -> list[dict]:
     transactions = []
     for _, row in df.iterrows():
         try:
+            # Strip time component if date includes a timestamp (e.g. "2025-01-05 00:00:00")
+            raw_date = str(row[resolved["date"]]).strip()
+            date = raw_date.split(" ")[0]
+
+            # Use the category column as the pre-set category if it exists
+            category = str(row["category"]).strip() if "category" in df.columns else None
+
             transactions.append({
-                "date": str(row[resolved["date"]]).strip(),
+                "date":        date,
                 "description": str(row[resolved["description"]]).strip(),
-                "amount": float(str(row[resolved["amount"]]).replace(",", "").replace("$", "")),
-                "source": "csv",
-                "reviewed": False,
+                "amount":      -abs(float(str(row[resolved["amount"]]).replace(",", "").replace("$", ""))),
+                "category":    category,
+                "source":      "csv",
+                "reviewed":    False,
             })
         except Exception:
             continue
