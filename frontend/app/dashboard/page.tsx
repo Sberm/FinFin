@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -85,6 +85,16 @@ function computeSectorAllocation(holdings: Holding[]): SectorAllocation[] {
 }
 
 // ---------------------------------------------------------------------------
+// Stable chart sub-renderers (module-level = no new reference each render)
+// ---------------------------------------------------------------------------
+
+function CategoryBar({ x, y, width, height, payload }: BarShapeProps) {
+  const color = (payload as CategoryStat)?.color ?? "#888";
+  return <rect x={x} y={y} width={Number(width)} height={Number(height)} fill={color} />;
+}
+
+
+// ---------------------------------------------------------------------------
 // Page component
 // ---------------------------------------------------------------------------
 
@@ -93,7 +103,6 @@ export default function DashboardPage() {
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [portfolioHistory, setPortfolioHistory] = useState<PortfolioSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadTransactions = getTransactions()
@@ -111,10 +120,34 @@ export default function DashboardPage() {
         setPortfolioHistory(demoPortfolioHistory);
       });
 
-    Promise.all([loadTransactions, loadPortfolio])
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
+    Promise.all([loadTransactions, loadPortfolio]).finally(() => setLoading(false));
   }, []);
+
+  // ── Derived data (hooks must run before any early return) ────────────────
+
+  const { income, expenses, net, categoryStats, monthlyNetData } = useMemo(() => {
+    const inc = transactions.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+    const exp = transactions.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+    return {
+      income: inc,
+      expenses: exp,
+      net: inc - exp,
+      categoryStats: computeCategoryStats(transactions),
+      monthlyNetData: computeMonthlyNet(transactions),
+    };
+  }, [transactions]);
+
+  const { portfolioValue, portfolioGain, portfolioGainPct, sectorAllocation } = useMemo(() => {
+    const value = holdings.reduce((s, h) => s + h.shares * h.price, 0);
+    const cost  = holdings.reduce((s, h) => s + h.shares * h.avg_cost, 0);
+    const gain  = value - cost;
+    return {
+      portfolioValue: value,
+      portfolioGain: gain,
+      portfolioGainPct: cost > 0 ? (gain / cost) * 100 : 0,
+      sectorAllocation: computeSectorAllocation(holdings),
+    };
+  }, [holdings]);
 
   // ── Early returns ─────────────────────────────────────────────────────────
 
@@ -122,18 +155,6 @@ export default function DashboardPage() {
     return (
       <main className="min-h-screen p-8 flex items-center justify-center">
         <p className="retro text-xs text-muted-foreground">Loading...</p>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen p-8 max-w-5xl mx-auto space-y-8">
-        <h1 className="retro text-xl font-bold text-primary">Dashboard</h1>
-        <p className="retro text-xs text-destructive">{error}</p>
-        <p className="retro text-[10px] text-muted-foreground">
-          Make sure the backend is running and NEXT_PUBLIC_API_URL is set correctly.
-        </p>
       </main>
     );
   }
@@ -148,21 +169,6 @@ export default function DashboardPage() {
       </main>
     );
   }
-
-  // ── Derived data ──────────────────────────────────────────────────────────
-
-  const income   = transactions.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
-  const expenses = transactions.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
-  const net      = income - expenses;
-
-  const categoryStats  = computeCategoryStats(transactions);
-  const monthlyNetData = computeMonthlyNet(transactions);
-
-  const portfolioValue    = holdings.reduce((s, h) => s + h.shares * h.price, 0);
-  const portfolioCost     = holdings.reduce((s, h) => s + h.shares * h.avg_cost, 0);
-  const portfolioGain     = portfolioValue - portfolioCost;
-  const portfolioGainPct  = portfolioCost > 0 ? (portfolioGain / portfolioCost) * 100 : 0;
-  const sectorAllocation  = computeSectorAllocation(holdings);
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -211,15 +217,7 @@ export default function DashboardPage() {
                       );
                     }}
                   />
-                  <Bar
-                    dataKey="total"
-                    isAnimationActive
-                    shape={(props: BarShapeProps) => {
-                      const { x, y, width, height, payload } = props;
-                      const color = (payload as CategoryStat)?.color ?? "#888";
-                      return <rect x={x} y={y} width={Number(width)} height={Number(height)} fill={color} />;
-                    }}
-                  />
+                  <Bar dataKey="total" shape={CategoryBar} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
