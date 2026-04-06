@@ -1,10 +1,7 @@
 import httpx
 import os
 import json
-
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-LLM_MODEL = os.getenv("LLM_MODEL", "mistral")
-
+from openai import OpenAI
 
 async def categorize_transaction(description: str, amount: float) -> dict:
     """Send transaction to local LLM and get category + confidence."""
@@ -16,21 +13,24 @@ Categories: Food, Transport, Shopping, Bills, Health, Entertainment, Income, Tra
 Transaction: "{description}" | Amount: ${amount}
 """
     try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            response = await client.post(
-                f"{OLLAMA_URL}/api/generate",
-                json={"model": LLM_MODEL, "prompt": prompt, "stream": False},
-            )
-            result = response.json()
-            raw = result.get("response", "{}")
-            data = json.loads(raw)
-            return {
-                "category": data.get("category", "Other"),
-                "confidence": int(data.get("confidence", 50)),
-            }
+        client = OpenAI(
+            api_key=os.getenv("API_KEY"),
+            base_url=os.getenv("LLM_URL"),
+        )
+        response = client.chat.completions.create(
+            model=os.getenv("LLM_MODEL"),
+            messages=[{
+                "role": "user",
+                "content": prompt
+            }]
+        )
+        data = json.loads(response.choices[0].message.content)
+        return {
+            "category": data.get("category", "Other"),
+            "confidence": int(data.get("confidence", 50))
+        }
     except Exception as e:
         return {"category": "Other", "confidence": 0, "error": str(e)}
-
 
 async def get_savings_advice(transactions: list) -> str:
     """Ask LLM for savings advice based on transaction history."""
@@ -45,11 +45,17 @@ Transactions:
 
 Respond in plain text, bullet points."""
     try:
-        async with httpx.AsyncClient(timeout=60) as client:
-            response = await client.post(
-                f"{OLLAMA_URL}/api/generate",
-                json={"model": LLM_MODEL, "prompt": prompt, "stream": False},
-            )
-            return response.json().get("response", "No advice available.")
+        client = OpenAI(
+            api_key=os.getenv("API_KEY"),
+            base_url=os.getenv("LLM_URL"),
+        )
+        response = client.chat.completions.create(
+            model=os.getenv("LLM_MODEL"),
+            messages=[{
+                "role": "user",
+                "content": prompt
+            }]
+        )
+        return response.choices[0].message.content
     except Exception as e:
         return f"LLM unavailable: {str(e)}"

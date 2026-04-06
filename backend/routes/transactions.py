@@ -131,6 +131,7 @@ def review_transaction(review: TransactionReview, db: Session = Depends(get_db))
 async def savings_advice(db: Session = Depends(get_db)):
     rows = db.query(TransactionORM).all()
     if not rows:
+        print("no transactions")
         raise HTTPException(status_code=400, detail="No transactions yet. Upload a bank statement first.")
     advice = await get_savings_advice([from_orm_to_dict(r) for r in rows])
     return {"advice": advice}
