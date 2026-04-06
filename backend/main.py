@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from routes import transactions, parser, llm
+from routes import transactions, parser, llm, portfolio
 from services.db import init_db
 
 load_dotenv()
@@ -28,8 +28,9 @@ app.add_middleware(
 )
 
 app.include_router(transactions.router, prefix="/api/transactions", tags=["Transactions"])
-app.include_router(parser.router, prefix="/api/parser", tags=["Parser"])
-app.include_router(llm.router, prefix="/api/llm", tags=["LLM"])
+app.include_router(parser.router,       prefix="/api/parser",       tags=["Parser"])
+app.include_router(llm.router,          prefix="/api/llm",          tags=["LLM"])
+app.include_router(portfolio.router,    prefix="/api/portfolio",    tags=["Portfolio"])
 
 
 @app.get("/")

@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from models.transaction import Base
+import models.portfolio  # noqa: F401 — registers HoldingORM + PortfolioSnapshotORM with Base
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://finfin:finfin@localhost:5432/finfin")
 

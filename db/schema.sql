@@ -19,6 +19,29 @@ CREATE TABLE IF NOT EXISTS transactions (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS holdings (
+    id       SERIAL PRIMARY KEY,
+    user_id  INT REFERENCES users(id) ON DELETE CASCADE,
+    ticker   VARCHAR(20)    NOT NULL,
+    name     VARCHAR(255)   NOT NULL,
+    shares   NUMERIC(18, 6) NOT NULL,
+    avg_cost NUMERIC(12, 2) NOT NULL,
+    price    NUMERIC(12, 2) NOT NULL,
+    sector   VARCHAR(100)   NOT NULL,
+    UNIQUE (user_id, ticker)
+);
+
+CREATE TABLE IF NOT EXISTS portfolio_snapshots (
+    id      SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    month   VARCHAR(7)     NOT NULL,  -- "YYYY-MM"
+    value   NUMERIC(16, 2) NOT NULL,
+    UNIQUE (user_id, month)
+);
+
+CREATE INDEX IF NOT EXISTS idx_holdings_ticker            ON holdings(ticker);
+CREATE INDEX IF NOT EXISTS idx_portfolio_snapshots_month  ON portfolio_snapshots(month);
+
 CREATE TABLE IF NOT EXISTS savings_goals (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,

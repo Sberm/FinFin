@@ -7,6 +7,8 @@ router = APIRouter()
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     content = await file.read()
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="Uploaded file must have a filename")
     filename = file.filename.lower()
 
     try:
