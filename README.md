@@ -11,7 +11,6 @@ A full-stack finance app with AI categorization, savings advice, and bank statem
 | Frontend | Next.js 15, TypeScript, Tailwind CSS |
 | Backend | Python FastAPI |
 | Database | PostgreSQL |
-| AI/LLM | Ollama (Mistral, self-hosted) |
 | Infra | Docker Compose |
 
 ---
