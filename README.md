@@ -36,7 +36,6 @@ Install these before starting:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) — runs everything
 - [Node.js 20+](https://nodejs.org/) — for frontend dev
 - [Python 3.12+](https://www.python.org/) — for backend dev
-- [Ollama](https://ollama.com/) — for local LLM
 
 ---
 
