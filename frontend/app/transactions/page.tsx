@@ -69,7 +69,7 @@ export default function TransactionsPage() {
                   <>
                     <Select
                       defaultValue={tx.category}
-                      onValueChange={(value) => handleAction(tx.id, "accept", value as string)}
+                      onValueChange={(value) => handleAction(tx.id!, "accept", value as string)}
                     >
                       <SelectTrigger className="w-36 h-8 text-xs">
                         <SelectValue />
@@ -86,14 +86,14 @@ export default function TransactionsPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAction(tx.id, "accept")}
+                      onClick={() => handleAction(tx.id!, "accept")}
                     >
                       Accept
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleAction(tx.id, "reject")}
+                      onClick={() => handleAction(tx.id!, "reject")}
                     >
                       Reject
                     </Button>
