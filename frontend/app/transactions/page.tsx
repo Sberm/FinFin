@@ -86,14 +86,14 @@ export default function TransactionsPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAction(tx.id!, "accept")}
+                      onClick={() => handleAction(tx.id!, "accept", tx.category)}
                     >
                       Accept
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleAction(tx.id!, "reject")}
+                      onClick={() => handleAction(tx.id!, "reject", tx.category)}
                     >
                       Reject
                     </Button>
