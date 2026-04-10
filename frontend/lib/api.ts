@@ -65,7 +65,7 @@ export async function addTransaction(
  * Triggers LLM categorization for each transaction on the backend.
  */
 export async function bulkSaveTransactions(
-  transactions: Pick<Transaction, "date" | "description" | "amount" | "source">[]
+  transactions: Transaction[]
 ): Promise<BulkTransactionsResponse> {
   return apiFetch<BulkTransactionsResponse>("/api/transactions/bulk", {
     method: "POST",

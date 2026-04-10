@@ -85,6 +85,7 @@ export default function TransactionsPage() {
 
                     <Button
                       size="sm"
+                      variant="outline"
                       onClick={() => handleAction(tx.id, "accept")}
                     >
                       Accept

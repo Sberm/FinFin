@@ -1,4 +1,3 @@
-import httpx
 import os
 import json
 from openai import OpenAI
@@ -31,6 +30,69 @@ Transaction: "{description}" | Amount: ${amount}
         }
     except Exception as e:
         return {"category": "Other", "confidence": 0, "error": str(e)}
+
+async def parse_pdf_transactions(text: str) -> list[dict]:
+    """Use LLM to extract structured transactions from free-form PDF text.
+
+    Handles natural language descriptions, multiple currencies (converting to
+    USD), and assigns an initial spending category.
+    """
+    prompt = f"""You are a financial data extraction assistant. Extract all financial transactions from the text below.
+
+For each transaction return a JSON object with:
+- "date": string in YYYY-MM-DD format
+- "description": concise description of what was purchased or paid for
+- "amount": number, negative for expenses, positive for income, always in USD
+- "category": one of: Food, Transport, Shopping, Bills, Health, Entertainment, Income, Transfer, Other
+
+Rules:
+- If an amount is in a non-USD currency, convert it to approximate USD using current exchange rates and append the original amount and currency to the description (e.g. "PS5 controller on eBay (60,000 JPY)").
+- Expenses must be negative numbers.
+- Return ONLY a valid JSON array. No markdown fences, no explanation, no other text.
+
+Text:
+{text}
+"""
+    client = OpenAI(
+        api_key=os.getenv("API_KEY"),
+        base_url=os.getenv("LLM_URL"),
+    )
+    response = client.chat.completions.create(
+        model=os.getenv("LLM_MODEL"),
+        messages=[{"role": "user", "content": prompt}],
+    )
+    content = response.choices[0].message.content.strip()
+
+    # Strip markdown code fences the LLM sometimes adds
+    if content.startswith("```"):
+        lines = content.splitlines()
+        content = "\n".join(
+            lines[1:-1] if lines[-1].strip() == "```" else lines[1:]
+        ).strip()
+
+    data = json.loads(content)
+    if not isinstance(data, list):
+        raise ValueError("LLM returned unexpected format (expected a JSON array).")
+
+    valid_categories = {
+        "Food", "Transport", "Shopping", "Bills",
+        "Health", "Entertainment", "Income", "Transfer", "Other",
+    }
+    result = []
+    for item in data:
+        category = item.get("category", "Other")
+        if category not in valid_categories:
+            category = "Other"
+        result.append({
+            "date":        str(item.get("date", "")).strip(),
+            "description": str(item.get("description", "")).strip(),
+            "amount":      float(item.get("amount", 0)),
+            "category":    category,
+            "source":      "pdf",
+            "reviewed":    False,
+        })
+    return result
+
 
 async def get_savings_advice(transactions: list) -> str:
     """Ask LLM for savings advice based on transaction history."""

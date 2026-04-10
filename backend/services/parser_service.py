@@ -1,7 +1,6 @@
 import pandas as pd
 import pdfplumber
 import io
-from datetime import datetime
 
 
 def parse_csv(file_bytes: bytes) -> list[dict]:
@@ -50,27 +49,14 @@ def parse_csv(file_bytes: bytes) -> list[dict]:
     return transactions
 
 
-def parse_pdf(file_bytes: bytes) -> list[dict]:
-    """Extract transactions from a bank statement PDF."""
-    transactions = []
+def extract_pdf_text(file_bytes: bytes) -> str:
+    """Extract all raw text from a PDF file."""
+    text = ""
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
         for page in pdf.pages:
-            table = page.extract_table()
-            if not table:
-                continue
-            headers = [str(h).strip().lower() for h in table[0]]
-            for row in table[1:]:
-                if not row or all(cell is None for cell in row):
-                    continue
-                try:
-                    row_dict = dict(zip(headers, row))
-                    transactions.append({
-                        "date": str(row_dict.get("date", "")).strip(),
-                        "description": str(row_dict.get("description", row_dict.get("details", ""))).strip(),
-                        "amount": float(str(row_dict.get("amount", 0)).replace(",", "").replace("$", "") or 0),
-                        "source": "pdf",
-                        "reviewed": False,
-                    })
-                except Exception:
-                    continue
-    return transactions
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+    if not text.strip():
+        raise ValueError("Could not extract any text from the PDF.")
+    return text.strip()
