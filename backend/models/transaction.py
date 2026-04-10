@@ -21,7 +21,6 @@ class TransactionORM(Base):
     description = Column(String, nullable=False)
     amount      = Column(Float, nullable=False)
     category    = Column(String, nullable=True)
-    confidence  = Column(Integer, nullable=True)   # 0-100 from LLM
     source      = Column(String, default="manual") # "csv" | "pdf" | "manual"
     reviewed    = Column(Boolean, default=False)
     # user_id intentionally nullable — no auth in MVP
@@ -41,7 +40,6 @@ def from_orm_to_dict(row: TransactionORM) -> dict:
         "description": row.description,
         "amount":      row.amount,
         "category":    row.category,
-        "confidence":  row.confidence,
         "source":      row.source,
         "reviewed":    row.reviewed,
     }
@@ -57,7 +55,6 @@ class Transaction(BaseModel):
     description: str
     amount: float
     category: Optional[str] = None
-    confidence: Optional[int] = None  # 0-100 from LLM
     source: str = "manual"            # "csv", "pdf", "manual"
     reviewed: bool = False
 

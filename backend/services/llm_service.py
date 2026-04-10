@@ -3,9 +3,9 @@ import json
 from openai import OpenAI
 
 async def categorize_transaction(description: str, amount: float) -> dict:
-    """Send transaction to local LLM and get category + confidence."""
+    """Send transaction to local LLM and get category."""
     prompt = f"""You are a financial assistant. Categorize the following bank transaction.
-Respond ONLY with valid JSON in this format: {{"category": "string", "confidence": 0-100}}
+Respond ONLY with valid JSON in this format: {{"category": "string"}}
 
 Categories: Food, Transport, Shopping, Bills, Health, Entertainment, Income, Transfer, Other
 
@@ -25,11 +25,10 @@ Transaction: "{description}" | Amount: ${amount}
         )
         data = json.loads(response.choices[0].message.content)
         return {
-            "category": data.get("category", "Other"),
-            "confidence": int(data.get("confidence", 50))
+            "category": data.get("category", "Other")
         }
     except Exception as e:
-        return {"category": "Other", "confidence": 0, "error": str(e)}
+        return {"category": "Other", "error": str(e)}
 
 async def parse_pdf_transactions(text: str) -> list[dict]:
     """Use LLM to extract structured transactions from free-form PDF text.

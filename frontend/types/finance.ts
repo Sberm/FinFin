@@ -18,7 +18,6 @@ export interface Transaction {
   description: string;
   amount: number;        // positive = income, negative = expense
   category?: string;     // e.g. "Food", "Bills", "Income" — set by AI classifier
-  confidence?: number;   // 0-100 confidence score from LLM categorization
   source?: string;       // "csv" | "pdf" | "manual"
   reviewed?: boolean;    // false until user accepts or edits in the Transactions page
 }

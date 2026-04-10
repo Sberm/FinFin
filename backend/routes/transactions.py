@@ -59,7 +59,6 @@ async def add_transactions_bulk(
         if not data.get("category"):
             result = await categorize_transaction(data["description"], data["amount"])
             data["category"] = result["category"]
-            data["confidence"] = result["confidence"]
 
         row = TransactionORM(**data)
         db.add(row)
@@ -84,7 +83,6 @@ async def add_transaction(tx: Transaction, db: Session = Depends(get_db)):
 
     result = await categorize_transaction(data["description"], data["amount"])
     data["category"] = result["category"]
-    data["confidence"] = result["confidence"]
 
     row = TransactionORM(**data)
     db.add(row)

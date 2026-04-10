@@ -61,7 +61,7 @@ export default function TransactionsPage() {
               <div className="flex items-center gap-4 flex-wrap">
                 <Badge variant={tx.reviewed ? "secondary" : "default"}>
                   <span className="retro text-[9px]">
-                    {tx.category || "Uncategorized"} ({tx.confidence ?? "?"}%)
+                    {tx.category || "Uncategorized"}
                   </span>
                 </Badge>
 

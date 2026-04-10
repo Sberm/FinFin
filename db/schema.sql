@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS transactions (
     description TEXT NOT NULL,
     amount NUMERIC(12, 2) NOT NULL,
     category VARCHAR(100),
-    confidence INT CHECK (confidence >= 0 AND confidence <= 100),
     source VARCHAR(50) DEFAULT 'manual',  -- 'csv', 'pdf', 'manual'
     reviewed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
