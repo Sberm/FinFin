@@ -1,0 +1,31 @@
+date_time,category,account,amount,currency,tags
+2025-11-30 00:00:00,Health,acct_1,114.0,BYN,tag_1
+2025-11-29 00:00:00,Food,acct_1,5.0,BYN,tag_1
+2025-11-27 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-27 00:00:00,Cafe,acct_1,10.0,BYN,tag_1
+2025-11-27 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-26 00:00:00,Cafe,acct_3,2.0,BYN,tag_1
+2025-11-26 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-25 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-25 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-25 00:00:00,Cafe,acct_1,11.0,BYN,tag_1
+2025-11-25 00:00:00,Taxi,acct_1,18.0,BYN,tag_1
+2025-11-24 00:00:00,Food,acct_1,9.0,BYN,tag_1
+2025-11-24 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-24 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-24 00:00:00,Cafe,acct_3,4.0,BYN,tag_1
+2025-11-24 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-24 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-22 00:00:00,Food,acct_1,11.0,BYN,tag_1
+2025-11-21 00:00:00,Public transport,acct_2,2.0,BYN,tag_1
+2025-11-21 00:00:00,Cafe,acct_1,11.0,BYN,tag_1
+2025-11-21 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-21 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-20 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-20 00:00:00,Public transport,acct_2,2.0,BYN,tag_1
+2025-11-20 00:00:00,Cafe,acct_1,9.0,BYN,tag_1
+2025-11-20 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-20 00:00:00,Cafe,acct_3,8.0,BYN,tag_1
+2025-11-19 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
+2025-11-18 00:00:00,Gifts,acct_1,79.0,BYN,tag_1
+2025-11-18 00:00:00,Public transport,acct_2,1.0,BYN,tag_1
