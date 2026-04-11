@@ -43,6 +43,8 @@ frontend/out/
 backend/uploads/
 *.csv
 *.pdf
+!data/*.csv
+!data/*.pdf
 
 # OS
 .DS_Store
@@ -61,6 +63,3 @@ logs/
 
 # Docker volumes (local data)
 ollama_data/
-
-# data
-data/
