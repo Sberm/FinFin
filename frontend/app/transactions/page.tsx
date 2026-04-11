@@ -20,11 +20,13 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getTransactions().then(setTransactions).finally(() => setLoading(false));
+    const data = getTransactions();
+    setTransactions(data);
+    setLoading(false);
   }, []);
 
   async function handleAction(id: number, action: "accept" | "reject", category?: string) {
-    await reviewTransaction({ id, action, category });
+    reviewTransaction({ id, action, category });
     setTransactions((prev) =>
       action === "reject" ? prev.filter((t) => t.id !== id) : prev.map((t) => t.id === id ? { ...t, reviewed: true, category } : t)
     );
@@ -61,7 +63,7 @@ export default function TransactionsPage() {
               <div className="flex items-center gap-4 flex-wrap">
                 <Badge variant={tx.reviewed ? "secondary" : "default"}>
                   <span className="retro text-[9px]">
-                    {tx.category || "Uncategorized"} ({tx.confidence ?? "?"}%)
+                    {tx.category || "Uncategorized"}
                   </span>
                 </Badge>
 
@@ -69,7 +71,7 @@ export default function TransactionsPage() {
                   <>
                     <Select
                       defaultValue={tx.category}
-                      onValueChange={(value) => handleAction(tx.id, "accept", value as string)}
+                      onValueChange={(value) => handleAction(tx.id!, "accept", value as string)}
                     >
                       <SelectTrigger className="w-36 h-8 text-xs">
                         <SelectValue />
@@ -85,14 +87,15 @@ export default function TransactionsPage() {
 
                     <Button
                       size="sm"
-                      onClick={() => handleAction(tx.id, "accept")}
+                      variant="outline"
+                      onClick={() => handleAction(tx.id!, "accept", tx.category)}
                     >
                       Accept
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleAction(tx.id, "reject")}
+                      onClick={() => handleAction(tx.id!, "reject", tx.category)}
                     >
                       Reject
                     </Button>

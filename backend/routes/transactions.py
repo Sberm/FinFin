@@ -59,7 +59,6 @@ async def add_transactions_bulk(
         if not data.get("category"):
             result = await categorize_transaction(data["description"], data["amount"])
             data["category"] = result["category"]
-            data["confidence"] = result["confidence"]
 
         row = TransactionORM(**data)
         db.add(row)
@@ -84,7 +83,6 @@ async def add_transaction(tx: Transaction, db: Session = Depends(get_db)):
 
     result = await categorize_transaction(data["description"], data["amount"])
     data["category"] = result["category"]
-    data["confidence"] = result["confidence"]
 
     row = TransactionORM(**data)
     db.add(row)
@@ -131,6 +129,7 @@ def review_transaction(review: TransactionReview, db: Session = Depends(get_db))
 async def savings_advice(db: Session = Depends(get_db)):
     rows = db.query(TransactionORM).all()
     if not rows:
+        print("no transactions")
         raise HTTPException(status_code=400, detail="No transactions yet. Upload a bank statement first.")
     advice = await get_savings_advice([from_orm_to_dict(r) for r in rows])
     return {"advice": advice}
