@@ -20,11 +20,13 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getTransactions().then(setTransactions).finally(() => setLoading(false));
+    const data = getTransactions();
+    setTransactions(data);
+    setLoading(false);
   }, []);
 
   async function handleAction(id: number, action: "accept" | "reject", category?: string) {
-    await reviewTransaction({ id, action, category });
+    reviewTransaction({ id, action, category });
     setTransactions((prev) =>
       action === "reject" ? prev.filter((t) => t.id !== id) : prev.map((t) => t.id === id ? { ...t, reviewed: true, category } : t)
     );

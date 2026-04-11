@@ -47,7 +47,7 @@ export default function UploadPage() {
       // Step 2: save to DB; LLM categorization is skipped for transactions
       // that already have a category (i.e. those extracted from PDFs).
       setSaving(true);
-      await bulkSaveTransactions(data.transactions);
+      bulkSaveTransactions(data.transactions);
       router.push("/dashboard");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Something went wrong.");

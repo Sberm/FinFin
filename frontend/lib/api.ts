@@ -11,10 +11,8 @@
 
 import type {
   Transaction,
-  TransactionsResponse,
   UploadResponse,
-  BulkTransactionsResponse,
-  PortfolioResponse,
+  PortfolioResponse
 } from "@/types/finance";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -39,24 +37,9 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
  * GET /api/transactions/
  * Returns all stored transactions, ordered by date descending.
  */
-export async function getTransactions(): Promise<Transaction[]> {
-  const data = await apiFetch<TransactionsResponse | Transaction[]>("/api/transactions/");
-  // Support both `{ transactions: [...] }` and bare `[...]` response shapes
-  return Array.isArray(data) ? data : (data as TransactionsResponse).transactions ?? [];
-}
-
-/**
- * POST /api/transactions/
- * Manually create a single transaction. Triggers LLM categorization.
- */
-export async function addTransaction(
-  data: Pick<Transaction, "date" | "description" | "amount" | "source">
-): Promise<Transaction> {
-  return apiFetch<Transaction>("/api/transactions/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+export function getTransactions(): Transaction[] {
+  const data = JSON.parse(localStorage.getItem('transactions') ?? "[]") as Transaction[];
+  return data;
 }
 
 /**
@@ -64,31 +47,50 @@ export async function addTransaction(
  * Save all transactions parsed from an uploaded file in one request.
  * Triggers LLM categorization for each transaction on the backend.
  */
-export async function bulkSaveTransactions(
+export function bulkSaveTransactions(
   transactions: Transaction[]
-): Promise<BulkTransactionsResponse> {
-  return apiFetch<BulkTransactionsResponse>("/api/transactions/bulk", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ transactions }),
+) {
+  const key = "transactions";
+  const idKey = "id";
+  let mxId = parseInt(localStorage.getItem(idKey) ?? "0");
+  const prevTransactions = JSON.parse(localStorage.getItem(key) ?? "[]") as Transaction[];
+  transactions = transactions.map((transac) => {
+    transac.id=mxId++;
+    return transac;
   });
+  let allTransac = prevTransactions.concat(transactions);
+  localStorage.setItem(idKey, mxId.toString());
+  localStorage.setItem(key, JSON.stringify(allTransac));
 }
 
 /**
  * POST /api/transactions/review
  * Accept, edit, or reject an AI-classified transaction.
  */
-export async function reviewTransaction(review: {
+export function reviewTransaction(review: {
   id: number;
   action: "accept" | "edit" | "reject";
   category?: string;
   description?: string;
-}): Promise<Transaction | { status: string }> {
-  return apiFetch<Transaction | { status: string }>("/api/transactions/review", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(review),
-  });
+}) {
+  const key = "transactions";
+  let transactions = JSON.parse(localStorage.getItem(key) ?? "[]") as Transaction[];
+  if (review.action === "reject") {
+    transactions = transactions.filter((transac) => transac.id !== review.id);
+  } else if (review.action === "edit") {
+    transactions.map((transac) => {
+      if (transac.id === review.id) {
+        transac.category = review.category;
+      }
+    });
+  } else if (review.action == "accept") {
+    transactions.map((transac) => {
+      if (transac.id === review.id) {
+        transac.reviewed = true;
+      }
+    })
+  }
+  localStorage.setItem(key, JSON.stringify(transactions));
 }
 
 // ---------------------------------------------------------------------------

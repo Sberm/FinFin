@@ -96,9 +96,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadTransactions = getTransactions()
-      .then((data) => setTransactions(data.length > 0 ? data : demoTransactions))
-      .catch(() => setTransactions(demoTransactions));
+    const data = getTransactions();
+    setTransactions(data.length > 0 ? data : demoTransactions);
 
     // TODO: remove the demo fallback once GET /api/portfolio/ is implemented
     const loadPortfolio = getPortfolio()
@@ -111,7 +110,7 @@ export default function DashboardPage() {
         setPortfolioHistory(demoPortfolioHistory);
       });
 
-    Promise.all([loadTransactions, loadPortfolio])
+    Promise.all([loadPortfolio])
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
