@@ -21,6 +21,7 @@ FinFin is an AI-powered personal finance tracker designed to help users better u
 
 ---
 
+```md
 ## Project Structure
 
 ```text
@@ -31,7 +32,6 @@ FinFin/
 ├── db/             → PostgreSQL schema
 ├── docker-compose.yml
 └── .env.example
-
 ---
 
 ## Core Features
