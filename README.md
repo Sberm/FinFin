@@ -21,7 +21,7 @@ FinFin is an AI-powered personal finance tracker designed to help users better u
 
 ---
 
-```md
+
 ## Project Structure
 
 ```text
@@ -32,6 +32,8 @@ FinFin/
 ├── db/             → PostgreSQL schema
 ├── docker-compose.yml
 └── .env.example
+```
+
 ---
 
 ## Core Features
@@ -73,6 +75,7 @@ docker exec -it finfin-ollama-1 ollama pull mistral
 
 Open: http://localhost:3000
 
+---
 
 ## Quick Demo
 
@@ -81,13 +84,14 @@ A quick way to test the project:
 1. Start the application with Docker or local development setup.
 2. Open the frontend at `http://localhost:3000`.
 3. Upload a sample file such as `data/expenses_small.csv`.
-4. Check the categorized transactions in the transactions/dashboard pages.
-5. Visit the advice page to view AI-generated savings suggestions.
+4. Check the categorized transactions in the `transactions` and `dashboard` pages.
+5. Visit the `advice` page to view AI-generated savings suggestions.
 
+---
 
 ## Local Dev Setup (without Docker)
 
-### Backend Developer
+### Backend
 
 ```bash
 cd backend
@@ -99,10 +103,10 @@ cp ../.env.example .env
 uvicorn main:app --reload
 ```
 
-API runs at: http://localhost:8000
+API runs at: http://localhost:8000  
 API docs at: http://localhost:8000/docs
 
-### Frontend Developer
+### Frontend
 
 ```bash
 cd frontend
@@ -169,5 +173,4 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 - The current version is designed for demo and coursework purposes, so it uses sample financial data rather than real banking integrations.
 - AI categorization may still require manual review for ambiguous transactions.
 - Future improvements could include stronger analytics, better model accuracy, and support for more statement formats.
-
 
