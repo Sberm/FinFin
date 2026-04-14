@@ -1,10 +1,38 @@
+<div align="center">
+
 # FinFin — AI-Powered Personal Finance Tracker
 
-A full-stack finance app with AI categorization, savings advice, and bank statement parsing.
+FinFin is a full-stack personal finance app that helps you **understand spending**, **auto-categorize transactions with AI**, and get **actionable savings advice** — with support for **bank statement parsing (CSV/PDF)**.
+
+<!-- Optional badges -->
+<!--
+[![CI](https://github.com/Sberm/FinFin/actions/workflows/ci.yml/badge.svg)](https://github.com/Sberm/FinFin/actions)
+[![License](https://img.shields.io/github/license/Sberm/FinFin.svg)](LICENSE)
+-->
+
+</div>
 
 ---
 
-## Tech Stack
+## 📖 Project Overview
+
+FinFin is an AI-powered personal finance tracker designed to help users better understand their spending habits.
+
+Upload bank statements, automatically categorize transactions, review/edit results, explore spending trends, and receive AI-generated savings guidance.
+
+---
+
+## ✨ Core Features
+
+- Upload **CSV or PDF** bank statements
+- Automatically **categorize transactions** with AI
+- **Review / edit / reject** categorized transactions
+- View transaction history and spending data
+- Get **AI-generated savings advice**
+
+---
+
+## 🧰 Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -15,12 +43,13 @@ A full-stack finance app with AI categorization, savings advice, and bank statem
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
 
-```
+```text
 FinFin/
-├── backend/        → FastAPI (Python) — API, LLM, parser logic
+├── backend/        → FastAPI (Python) — API, AI, parser logic
 ├── frontend/       → Next.js (React) — UI
+├── docs/           → Architecture and project documentation
 ├── db/             → PostgreSQL schema
 ├── docker-compose.yml
 └── .env.example
@@ -28,13 +57,13 @@ FinFin/
 
 ---
 
-## Prerequisites
+## ✅ Prerequisites
 
 Install these before starting:
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) — runs everything
-- [Node.js 20+](https://nodejs.org/) — for frontend dev
-- [Python 3.12+](https://www.python.org/) — for backend dev
+- **Docker Desktop** — runs everything
+- **Node.js 20+** — for frontend dev
+- **Python 3.12+** — for backend dev
 
 ---
 
@@ -59,9 +88,19 @@ Open: http://localhost:3000
 
 ---
 
-## Local Dev Setup (without Docker)
+## 🎬 Quick Demo
 
-### Backend Developer
+1. Start the application with Docker (recommended) or local dev setup.
+2. Open the frontend at `http://localhost:3000`.
+3. Upload a sample file such as `data/expenses_small.csv`.
+4. Review categorized transactions in the `transactions` and `dashboard` pages.
+5. Visit the `advice` page to view AI-generated savings suggestions.
+
+---
+
+## 🧪 Local Dev Setup (without Docker)
+
+### Backend (FastAPI)
 
 ```bash
 cd backend
@@ -73,10 +112,10 @@ cp ../.env.example .env
 uvicorn main:app --reload
 ```
 
-API runs at: http://localhost:8000
-API docs at: http://localhost:8000/docs
+- API: `http://localhost:8000`  
+- Docs: `http://localhost:8000/docs`
 
-### Frontend Developer
+### Frontend (Next.js)
 
 ```bash
 cd frontend
@@ -94,7 +133,7 @@ docker-compose up db
 
 ---
 
-## API Overview
+## 🔌 API Overview
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -107,10 +146,43 @@ docker-compose up db
 
 ---
 
-## Environment Variables
+## 🤖 AI Model (Gemini)
 
 Copy `.env.example` to `backend/.env`.
 
 Make sure you copy the `API_KEY` from the paper to the `backend/.env` file.
 
+=======
+FinFin uses **Google Gemini `gemini-3.1-pro-preview`** for AI-powered features like:
+
+- **Transaction categorization** (assigning labels/categories based on merchant + memo/context)
+- **Savings advice** (natural-language guidance based on spending patterns)
+
+### Why this model?
+- **High-quality reasoning & language understanding** for messy transaction descriptions
+- **Consistent outputs** when prompted with a structured schema (useful for categorization)
+- The **`*-preview`** suffix means the model is a *preview release* and may change behavior over time, so results can vary slightly between updates.
+
 ---
+
+## 👥 Team Roles
+
+| Role | Work in |
+|---|---|
+| Frontend | `frontend/` |
+| Backend | `backend/` |
+| Database | `db/schema.sql` |
+
+---
+
+## ⚠️ Limitations / Future Work
+
+- Current version is designed for demo/coursework purposes (uses sample financial data rather than real bank integrations).
+- AI categorization may still require manual review for ambiguous transactions.
+- Future improvements: stronger analytics, better model accuracy, and more statement formats.
+
+---
+
+## 📄 License
+
+See the [LICENSE](LICENSE) file for details.
