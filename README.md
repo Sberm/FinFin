@@ -38,22 +38,22 @@ Install these before starting:
 
 ---
 
-## Quick Start (Docker — run everything at once)
+## Quick Start
 
 ```bash
 # 1. Clone the repo
 git clone <repo-url>
 cd FinFin
 
-# 2. Copy environment variables
+# 2. Copy environment variables (make sure you copied the API_KEY from the paper)
 cp .env.example backend/.env
 
-# 3. Start all services
+# 3. Start everything
 docker-compose up
-
-# 4. Pull the AI model (first time only)
-docker exec -it finfin-ollama-1 ollama pull mistral
 ```
+
+__Please put the `API_KEY` provided in the project paper into the backend/.env file__
+
 
 Open: http://localhost:3000
 
@@ -86,14 +86,6 @@ npm run dev
 
 App runs at: http://localhost:3000
 
-### LLM Setup
-
-```bash
-# Install Ollama from https://ollama.com, then:
-ollama pull mistral
-ollama serve
-```
-
 ### Database (Docker only)
 
 ```bash
@@ -117,21 +109,8 @@ docker-compose up db
 
 ## Environment Variables
 
-Copy `.env.example` to `backend/.env` and `frontend/.env.local`:
+Copy `.env.example` to `backend/.env`.
 
-```env
-DATABASE_URL=postgresql://finfin:finfin@localhost:5432/finfin
-OLLAMA_URL=http://localhost:11434
-LLM_MODEL=mistral
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
+Make sure you copy the `API_KEY` from the paper to the `backend/.env` file.
 
 ---
-
-## Team Roles
-
-| Role | Work in |
-|---|---|
-| Frontend | `frontend/` |
-| Backend | `backend/` |
-| Database | `db/schema.sql` |
