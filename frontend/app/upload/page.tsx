@@ -3,10 +3,10 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { uploadFile, bulkSaveTransactions } from "@/lib/api";
+import { uploadFile, bulkSaveTransactions, upsertHolding } from "@/lib/api";
 import { Button } from "@/components/ui/8bit/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/8bit/card";
-import type { Transaction } from "@/types/finance";
+import type { Transaction, Holding } from "@/types/finance";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function UploadPage() {
 
   const [file, setFile] = useState<File | null>(null);
   const [parsed, setParsed] = useState<Transaction[]>([]);
+  const [parsedHoldings, setParsedHoldings] = useState<Holding[]>([]);
   const [parsing, setParsing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -27,11 +28,21 @@ export default function UploadPage() {
       setParsing(true);
       const data = await uploadFile(file);
       setParsed(data.transactions);
+      setParsedHoldings(data.holdings ?? []);
       setParsing(false);
 
-      // Step 2: auto-save + LLM categorize → redirect on done
+      // Step 2: save transactions + holdings → redirect on done
       setSaving(true);
-      await bulkSaveTransactions(data.transactions);
+      const saves: Promise<unknown>[] = [];
+
+      if (data.transactions.length > 0) {
+        saves.push(bulkSaveTransactions(data.transactions));
+      }
+      if (data.holdings && data.holdings.length > 0) {
+        saves.push(...data.holdings.map((h) => upsertHolding(h)));
+      }
+
+      await Promise.all(saves);
       router.push("/dashboard");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -48,7 +59,7 @@ export default function UploadPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Select File</CardTitle>
-          <CardDescription>Accepts .csv or .pdf</CardDescription>
+          <CardDescription>Accepts .csv or .pdf — CSV may include both expenses and investments</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <input
@@ -93,6 +104,26 @@ export default function UploadPage() {
                   </span>
                   <span className={`retro text-xs font-bold ${tx.amount < 0 ? "text-destructive" : "text-primary"}`}>
                     ${tx.amount}
+                  </span>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {parsedHoldings.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="retro text-xs text-foreground">{parsedHoldings.length} holdings found</h2>
+          <div className="space-y-3">
+            {parsedHoldings.map((h, i) => (
+              <Card key={i}>
+                <CardContent className="flex justify-between items-center py-3">
+                  <span className="retro text-[10px] text-muted-foreground">
+                    <span className="font-bold text-primary">{h.ticker}</span> — {h.name} ({h.sector})
+                  </span>
+                  <span className="retro text-xs font-bold text-primary">
+                    {h.shares} shares @ ${h.price}
                   </span>
                 </CardContent>
               </Card>

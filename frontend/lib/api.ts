@@ -15,6 +15,7 @@ import type {
   UploadResponse,
   BulkTransactionsResponse,
   PortfolioResponse,
+  Holding,
 } from "@/types/finance";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -134,4 +135,16 @@ export async function getSavingsAdvice(): Promise<{ advice: string }> {
  */
 export async function getPortfolio(): Promise<PortfolioResponse> {
   return apiFetch<PortfolioResponse>("/api/portfolio/");
+}
+
+/**
+ * POST /api/portfolio/holdings
+ * Add or update a single holding (upsert by ticker).
+ */
+export async function upsertHolding(holding: Holding): Promise<Holding> {
+  return apiFetch<Holding>("/api/portfolio/holdings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(holding),
+  });
 }

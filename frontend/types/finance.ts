@@ -32,6 +32,7 @@ export interface TransactionsResponse {
 export interface UploadResponse {
   count: number;
   transactions: Transaction[];
+  holdings: Holding[];
 }
 
 /** Shape returned by POST /api/transactions/bulk */

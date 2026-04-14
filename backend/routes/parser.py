@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from services.parser_service import parse_csv, parse_pdf
+from services.parser_service import parse_csv, extract_pdf_text
+from services.llm_service import parse_pdf_transactions
 
 router = APIRouter()
 
@@ -13,12 +14,22 @@ async def upload_file(file: UploadFile = File(...)):
 
     try:
         if filename.endswith(".csv"):
-            transactions = parse_csv(content)
+            result = parse_csv(content)
+            transactions = result["transactions"]
+            holdings = result["holdings"]
         elif filename.endswith(".pdf"):
-            transactions = parse_pdf(content)
+            raw_text = extract_pdf_text(content)
+            transactions = await parse_pdf_transactions(raw_text)
+            holdings = []
         else:
             raise HTTPException(status_code=400, detail="Only CSV and PDF files are supported")
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process file: {str(e)}")
 
-    return {"count": len(transactions), "transactions": transactions}
+    return {
+        "count": len(transactions),
+        "transactions": transactions,
+        "holdings": holdings,
+    }
