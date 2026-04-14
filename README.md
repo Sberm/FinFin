@@ -67,21 +67,24 @@ Install these before starting:
 
 ---
 
-## 🚀 Quick Start (Docker — run everything)
+## Quick Start
 
 ```bash
 # 1. Clone the repo
 git clone <repo-url>
 cd FinFin
 
-# 2. Copy environment variables
+# 2. Copy environment variables (make sure you copied the API_KEY from the paper)
 cp .env.example backend/.env
 
-# 3. Start all services
+# 3. Start everything
 docker-compose up
 ```
 
-Open: `http://localhost:3000`
+__Please put the `API_KEY` provided in the project paper into the backend/.env file__
+
+
+Open: http://localhost:3000
 
 ---
 
@@ -120,7 +123,13 @@ npm install
 npm run dev
 ```
 
-App: `http://localhost:3000`
+App runs at: http://localhost:3000
+
+### Database (Docker only)
+
+```bash
+docker-compose up db
+```
 
 ---
 
@@ -139,6 +148,11 @@ App: `http://localhost:3000`
 
 ## 🤖 AI Model (Gemini)
 
+Copy `.env.example` to `backend/.env`.
+
+Make sure you copy the `API_KEY` from the paper to the `backend/.env` file.
+
+=======
 FinFin uses **Google Gemini `gemini-3.1-pro-preview`** for AI-powered features like:
 
 - **Transaction categorization** (assigning labels/categories based on merchant + memo/context)
@@ -148,28 +162,6 @@ FinFin uses **Google Gemini `gemini-3.1-pro-preview`** for AI-powered features l
 - **High-quality reasoning & language understanding** for messy transaction descriptions
 - **Consistent outputs** when prompted with a structured schema (useful for categorization)
 - The **`*-preview`** suffix means the model is a *preview release* and may change behavior over time, so results can vary slightly between updates.
-
----
-
-## 🔐 Environment Variables
-
-Copy `.env.example` to `backend/.env` and (optionally) configure `frontend/.env.local`.
-
-### Backend (`backend/.env`)
-
-```env
-DATABASE_URL=postgresql://finfin:finfin@localhost:5432/finfin
-
-# Gemini
-GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-3.1-pro-preview
-```
-
-### Frontend (`frontend/.env.local`) (if needed)
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
 
 ---
 
