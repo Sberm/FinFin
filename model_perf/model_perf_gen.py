@@ -4,10 +4,11 @@ from openai import OpenAI
 import pandas as pd
 import tqdm
 import time
+from dotenv import load_dotenv
 
-API_KEY = 'sk_KudyH3KCoW5DAZ7k9fpLgQjhPCFLfr44fMs4z2ZvRag'
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 API_URL = 'https://api.jiekou.ai/openai'
-
 
 # ====== APIs ======
 
@@ -57,16 +58,17 @@ def test_llm(name, filename, sec=60):
     print('categorizing with model', name)
     categorized = []
     for desc, amt in tqdm.tqdm(desc_amt):
+        # interesting, this can be omitted
+        res = None
         while True:
             res = call_model(desc, amt, name)
             if res.get('error'):
                 error_msg = str(res.get('error'))
                 print('early stoppage, error:', error_msg)
-                if error_msg.find('limit') or error_msg.find('rate') or error_msg.find('fast'):
+                if error_msg.find('limit') != -1 or error_msg.find('rate') != -1 or error_msg.find('fast') != -1:
                     print('hit rate limit')
                 print(f'sleeping for {sec} seconds')
                 time.sleep(sec)
-            if res.get('error'):
                 continue
             else:
                 break
