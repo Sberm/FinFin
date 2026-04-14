@@ -152,7 +152,9 @@ Copy `.env.example` to `backend/.env`.
 
 Make sure you copy the `API_KEY` from the paper to the `backend/.env` file.
 
-=======
+
+---
+
 FinFin uses **Google Gemini `gemini-3.1-pro-preview`** for AI-powered features like:
 
 - **Transaction categorization** (assigning labels/categories based on merchant + memo/context)
@@ -165,24 +167,8 @@ FinFin uses **Google Gemini `gemini-3.1-pro-preview`** for AI-powered features l
 
 ---
 
-## 👥 Team Roles
-
-| Role | Work in |
-|---|---|
-| Frontend | `frontend/` |
-| Backend | `backend/` |
-| Database | `db/schema.sql` |
-
----
-
 ## ⚠️ Limitations / Future Work
 
 - Current version is designed for demo/coursework purposes (uses sample financial data rather than real bank integrations).
 - AI categorization may still require manual review for ambiguous transactions.
 - Future improvements: stronger analytics, better model accuracy, and more statement formats.
-
----
-
-## 📄 License
-
-See the [LICENSE](LICENSE) file for details.
