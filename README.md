@@ -4,6 +4,12 @@ A full-stack finance app with AI categorization, savings advice, and bank statem
 
 ---
 
+## Project Overview
+
+FinFin is an AI-powered personal finance tracker designed to help users better understand their spending habits. The system allows users to upload bank statements, automatically categorize transactions with AI assistance, and provide savings advice based on spending patterns. This project combines full-stack web development, database design, and practical AI integration in a real-world finance use case.
+
+
+---
 ## Tech Stack
 
 | Layer | Technology |
@@ -17,14 +23,24 @@ A full-stack finance app with AI categorization, savings advice, and bank statem
 
 ## Project Structure
 
-```
+```text
 FinFin/
 ├── backend/        → FastAPI (Python) — API, LLM, parser logic
 ├── frontend/       → Next.js (React) — UI
+├── docs/           → Architecture and project documentation
 ├── db/             → PostgreSQL schema
 ├── docker-compose.yml
 └── .env.example
-```
+
+---
+
+## Core Features
+
+- Upload CSV or PDF bank statements
+- Automatically categorize transactions with AI
+- Review, edit, or reject categorized transactions
+- View transaction history and spending data
+- Receive AI-generated savings advice
 
 ---
 
@@ -57,7 +73,17 @@ docker exec -it finfin-ollama-1 ollama pull mistral
 
 Open: http://localhost:3000
 
----
+
+## Quick Demo
+
+A quick way to test the project:
+
+1. Start the application with Docker or local development setup.
+2. Open the frontend at `http://localhost:3000`.
+3. Upload a sample file such as `data/expenses_small.csv`.
+4. Check the categorized transactions in the transactions/dashboard pages.
+5. Visit the advice page to view AI-generated savings suggestions.
+
 
 ## Local Dev Setup (without Docker)
 
@@ -135,3 +161,13 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 | Frontend | `frontend/` |
 | Backend | `backend/` |
 | Database | `db/schema.sql` |
+
+---
+
+## Limitations / Future Work
+
+- The current version is designed for demo and coursework purposes, so it uses sample financial data rather than real banking integrations.
+- AI categorization may still require manual review for ambiguous transactions.
+- Future improvements could include stronger analytics, better model accuracy, and support for more statement formats.
+
+
