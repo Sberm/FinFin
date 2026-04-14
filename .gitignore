@@ -45,6 +45,9 @@ backend/uploads/
 *.pdf
 !data/*.csv
 !data/*.pdf
+!data/llm/*.csv
+*.png
+*.jpg
 
 # OS
 .DS_Store
